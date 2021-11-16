@@ -1,5 +1,6 @@
 const Position = require('../models/Position');
 const errorHandler = require('../utils/error-handler');
+const notify = require('../utils/notify');
 
 module.exports.getByCategoryId = async function (req, res) {
     try {
@@ -21,7 +22,7 @@ module.exports.create = async function (req, res) {
             category: req.body.category,
             user: req.user.id
         }).save();
-        res.status(201).json(position);
+        notify(res, 201, 'position_has_been_created', position);
     } catch (e) {
         errorHandler(res, e)
     }
@@ -30,7 +31,7 @@ module.exports.create = async function (req, res) {
 module.exports.remove = async function (req, res) {
     try {
         await Position.remove({_id: req.params.positionId});
-        res.status(200).json({message: 'position_was_deleted'});
+        notify(res, 200, 'position_was_deleted', null);
     } catch (e) {
         errorHandler(res, e)
     }
@@ -43,7 +44,7 @@ module.exports.update = async function (req, res) {
             {$set: req.body},
             {new: true}
             );
-        res.status(200).json(position);
+        notify(res, 204, 'position_was_updated', position);
     } catch (e) {
         errorHandler(res, e)
     }
