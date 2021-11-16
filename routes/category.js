@@ -1,12 +1,13 @@
 const express = require('express');
-const controller = require('../controllers/category');
 const passport = require('passport');
+const upload = require('../middleware/upload');
+const controller = require('../controllers/category');
 const router = express.Router();
 
 router.get('/', passport.authenticate('jwt', {session: false}), controller.getAll);
-router.get('/:categoryId', controller.getById);
-router.delete('/categoryId', controller.remove);
-router.post('/', controller.create);
-router.patch('/:categoryId', controller.update);
+router.get('/:categoryId', passport.authenticate('jwt', {session: false}), controller.getById);
+router.delete('/categoryId', passport.authenticate('jwt', {session: false}), controller.remove);
+router.post('/', passport.authenticate('jwt', {session: false}), upload.single('image'), controller.create);
+router.patch('/:categoryId', passport.authenticate('jwt', {session: false}), upload.single('image'), controller.update);
 
 module.exports = router;

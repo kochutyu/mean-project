@@ -31,16 +31,33 @@ module.exports.remove = async function (req, res) {
 }
 
 module.exports.create = async function (req, res) {
+    const category = new Category({
+        name: req.body.name,
+        user: req.user.userId,
+        imageSrc: req.file ? req.file.path : ''
+    });
     try {
-
+        await category.save();
+        res.status(200).json({message: 'category_was_created', category});
     } catch (e) {
         errorHandler(res, e);
     }
 }
 
 module.exports.update = async function (req, res) {
+    const updated = {
+        name: req.body.name
+    };
+    if (req.file) {
+        updated.imageSrc = req.file.path;
+    }
     try {
-
+        const category = await Category.findOneAndUpdate(
+            {_id: req.params.categoryId},
+            {$set: updated},
+            {new: true}
+        )
+        res.status(200).json({message: 'category_was_updated', category});
     } catch (e) {
         errorHandler(res, e);
     }
