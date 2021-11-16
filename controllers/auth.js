@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const {jwtKey} = require('../config/keys');
 const errorHandler = require('../utils/error-handler');
+const notify = require('../utils/notify');
 
 module.exports.login = async function (req, res) {
     const candidate = await User.findOne({email: req.body.email});
@@ -49,8 +50,8 @@ module.exports.register = async function (req, res) {
         });
 
         try {
-            await user.save()
-            res.status(201).json(user);
+            await user.save();
+            notify(res, 201, 'user_has_been_registered', user);
         } catch (e) {
             errorHandler(res, e);
         }
