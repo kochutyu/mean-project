@@ -1,6 +1,7 @@
 const Category = require('../models/Category');
 const Position = require('../models/Position');
 const errorHandler = require('../utils/error-handler');
+const notify = require('../utils/notify');
 
 module.exports.getAll = async function (req, res) {
     try {
@@ -23,8 +24,8 @@ module.exports.getById = async function (req, res) {
 module.exports.remove = async function (req, res) {
     try {
         await Category.remove({_id: req.params.categoryId});
-        await Position.remove({category: req.params.categoryId})
-        res.status(200).json({message: 'category_was_deleted'});
+        await Position.remove({category: req.params.categoryId});
+        notify(res, 200, 'category_was_deleted', null);
     } catch (e) {
         errorHandler(res, e);
     }
@@ -38,7 +39,7 @@ module.exports.create = async function (req, res) {
     });
     try {
         await category.save();
-        res.status(200).json({message: 'category_was_created', category});
+        notify(res, 201, 'category_was_created', category);
     } catch (e) {
         errorHandler(res, e);
     }
@@ -56,8 +57,8 @@ module.exports.update = async function (req, res) {
             {_id: req.params.categoryId},
             {$set: updated},
             {new: true}
-        )
-        res.status(200).json({message: 'category_was_updated', category});
+        );
+        notify(res, 204, 'category_was_updated', category);
     } catch (e) {
         errorHandler(res, e);
     }
